@@ -70,7 +70,7 @@ class Emulator:
         self.regs[Register.DR] = self.memory[self.regs[Register.AR]]
         inst = self.regs[Register.DR]
         #print(self.memory[self.regs[Register.AR] + 1], self.memory[self.regs[Register.AR] + 2])
-        if inst == Instruction.MOV.value:
+        if inst == Instruction.MOV.value or inst == Instruction.CMP.value:
             self.inc_pc(3) # increase by 3 because op size is 3 (1 byte for MOV, 1 for the register and 1 for the value to move)
         else:
             self.inc_pc()
@@ -123,12 +123,9 @@ class Emulator:
     def _mov(self):
         print("MOV CALLED")
         print(self.memory[self.regs[Register.AR] - 1], self.memory[self.regs[Register.AR] - 2])
-        
         reg = Register(self.memory[self.regs[Register.AR] - 2])  # Get register from memory
         value = self.memory[self.regs[Register.AR] - 1]           # Get value from memory
-        
         print(f"Moving value {value} to register {reg.name}")
-        
         self.regs[reg] = int(value)  # Assign value to register's integer value
 
         

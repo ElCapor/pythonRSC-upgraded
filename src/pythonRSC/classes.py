@@ -20,6 +20,8 @@ class Instruction(Enum):
     NOT = 15
     CALL = 16
     MOV = 17
+    MOVA = 18 # mov data into address
+    CMP = 19
 
 
 class Register(Enum):

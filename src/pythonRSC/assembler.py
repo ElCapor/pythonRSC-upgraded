@@ -49,9 +49,28 @@ class Assembler():
             return index
         else:
             raise KeyError(f"Token '{token}' not found in asm_env")
-        
-    def token2register(self, token):
+    
+    def isregister(self, token) -> bool:
         if token in Register.__members__:
+            return True
+        else:
+            return False
+    """ Check if the given symbol is an address or the value of an address
+    address -> = address
+    [address] -> value inside
+    """
+    def isvalue(self, symbol):
+        return (symbol[0] == "[" and symbol[-1] == "]")
+    
+    """remove the [] around the value to search in symbol table"""
+    def nakevalue(self, token):
+        if self.isvalue(token):
+            return token[1:-1]
+        else:
+            raise TypeError("Expected value")
+    
+    def token2register(self, token):
+        if self.isregister(token):
             return Register[token].value
         else:
             raise KeyError(f"Token '{token}' not found in registers list")
@@ -79,7 +98,16 @@ class Assembler():
                 try:
                     if len(tokens[1].split(",", 1)) > 1: # make sure we have a comma
                         tokens = [item for elem in tokens for item in elem.split(',') if item]
-                        self.opcodes.extend([self.converter(t1), self.token2register(tokens[1]), tokens[2]])
+                        self.opcodes.append(self.converter(t1))
+                        if self.isregister(tokens[1]):
+                            self.opcodes.append(self.token2register(tokens[1]))
+                        else:
+                            print("ERROR NOT A REGISTER")
+                            raise NotImplementedError()
+                        if self.isvalue(tokens[2]):
+                            self.opcodes.append(self.opcodes[self.symbol_table[self.nakevalue(tokens[2])]])
+                        else:
+                            self.opcodes.append(self.symbol_table[tokens[2]])
                     else:
                         raise IndexError("Missing ,")
                 except IndexError:

@@ -2,7 +2,17 @@
 Feature added : Support CALL instruction , where you can call your own python shared functions from asm
 
 ADDED 6 new registers : x0, x1, x2, x3, x4, x5
+
 ADDED MOV instruction : MOV register, value (MOV x0, 12)
+
+FIXED MOV :
+
+you can move a value or an address to a register :
+
+MOV x0, address ; will load the address in memory to x0
+MOV x0, [address] ; will load the value inside the address
+
+TODO : maybe add lea, and support mov to address
 (idk how to write clean code pls calastrophe don't kill me)
 
 # pythonRSC ( Relatively Simple Computer in Python )
