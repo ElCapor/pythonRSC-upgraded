@@ -28,6 +28,7 @@ class Instruction(Enum):
     MOVAV = 23 # move value into address
     MOVAA = 24 # move address into address
     MOV = 25 # just mov
+    CMPXX = 26 # compare 2 registers
     CMP = 99
 
 

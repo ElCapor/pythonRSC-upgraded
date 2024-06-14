@@ -159,6 +159,18 @@ class Assembler():
                 except IndexError:
                     print("Expected an operand for", t1,"at line", self.ln)
                     """
+            elif t1 in ["CMP"]:
+                try:
+                    if len(tokens[1].split(",", 1)) > 1:
+                        tokens = [item for elem in tokens for item in elem.split(',') if item]
+                        if self.isregister(tokens[1]) and self.isregister(tokens[2]):
+                            self.opcodes.extend([Instruction.CMPXX.value, self.token2register(tokens[1]), self.token2register(tokens[2])])
+                        else:
+                            print("Only cmp with 2 registers supported for now")
+                    else:
+                        print("missing operands")
+                except IndexError:
+                    print("CMP Index error")
             else:
                 self.opcodes.append(self.converter(t1))
         elif ':' in t1:

@@ -70,7 +70,7 @@ class Emulator:
         self.regs[Register.DR] = self.memory[self.regs[Register.AR]]
         inst = self.regs[Register.DR]
         #print(self.memory[self.regs[Register.AR] + 1], self.memory[self.regs[Register.AR] + 2])
-        if (inst >= Instruction.MOVXA.value and inst <= Instruction.MOVAA.value): # check if it's a mov instruction
+        if (inst >= Instruction.MOVXA.value and inst <= Instruction.MOVAA.value) or (inst == Instruction.CMPXX.value): # check if it's a mov instruction
             self.inc_pc(3) # increase by 3 because op size is 3 (1 byte for MOV, 1 for the register and 1 for the value to move)
         else:
             self.inc_pc()
@@ -134,10 +134,24 @@ class Emulator:
                 self._movav()
             case Instruction.MOVAI:
                 self._movai()
+            # CMP Instructions
+            case Instruction.CMPXX:
+                self._cmpxx()                
                 
     """ Returns the operand that is at a specific index from pc register"""
     def get_operand_at_index(self, idx :int) ->int:
         return int(self.memory[self.regs[Register.AR] - idx])
+    
+    def _cmpxx(self):
+        r1 :Register = Register(self.get_operand_at_index(2))
+        r2 :Register = Register(self.get_operand_at_index(1))
+        print(f"CMP {r1.name} , {r2.name}")
+        result = self.regs[r1] - self.regs[r2]
+        print(result)
+        if  result == 0:
+            self.regs[Register.Z] = 1
+        else:
+            self.regs[Register.Z] = 0
     
     def _movxx(self):
         print("MOVXX")
