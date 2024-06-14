@@ -19,6 +19,7 @@ class Instruction(Enum):
     ASHR = 14
     NOT = 15
     CALL = 16
+    MOV = 17
 
 
 class Register(Enum):
@@ -31,7 +32,12 @@ class Register(Enum):
     OUTR = 6
     ACC = 7
     R = 8
-
+    x0 = 9
+    x1 = 10
+    x2 = 11
+    x3 = 12
+    x4 = 13
+    x5 = 15
 
 def hello_asm():
     print("Hello world")

@@ -61,16 +61,21 @@ class Emulator:
             print(f"{reg.name : <4} : {hex(self.regs[reg])}")
 
     """ Utility function to increment PC register """
-    def inc_pc(self):
-        self.regs[Register.PC] = self.regs[Register.PC] + 1
+    def inc_pc(self, step :int = 1):
+        self.regs[Register.PC] = self.regs[Register.PC] + step
 
     """ The fetch cycle of the emulator """
     def fetch(self) -> Instruction:
         self.regs[Register.AR] = self.regs[Register.PC]
         self.regs[Register.DR] = self.memory[self.regs[Register.AR]]
-        self.inc_pc()
+        inst = self.regs[Register.DR]
+        #print(self.memory[self.regs[Register.AR] + 1], self.memory[self.regs[Register.AR] + 2])
+        if inst == Instruction.MOV.value:
+            self.inc_pc(3) # increase by 3 because op size is 3 (1 byte for MOV, 1 for the register and 1 for the value to move)
+        else:
+            self.inc_pc()
         self.regs[Register.IR] = self.regs[Register.DR]
-        self.regs[Register.AR] = self.regs[Register.PC]
+        self.regs[Register.AR] = self.regs[Register.PC] # since AR will be set to PC , we can access the two operands by doing self.regs[Register.AR -3]
         return Instruction(self.regs[Register.IR]) # If you are reading this error message, you are somehow reading a non-instruction!
    
 
@@ -112,7 +117,21 @@ class Emulator:
                 self._not()
             case Instruction.CALL:
                 self._call()
+            case Instruction.MOV:
+                self._mov()
                 
+    def _mov(self):
+        print("MOV CALLED")
+        print(self.memory[self.regs[Register.AR] - 1], self.memory[self.regs[Register.AR] - 2])
+        
+        reg = Register(self.memory[self.regs[Register.AR] - 2])  # Get register from memory
+        value = self.memory[self.regs[Register.AR] - 1]           # Get value from memory
+        
+        print(f"Moving value {value} to register {reg.name}")
+        
+        self.regs[reg] = int(value)  # Assign value to register's integer value
+
+        
     def _call(self):
         print("call")
         syscall = self.memory[self.regs[Register.AR]]
@@ -218,7 +237,7 @@ class Memory:
 """ A wrapper around an np.array of int32, allows for quick access and modification of contents """
 class Registers:
     def __init__(self):
-        self.regs = np.zeros(9, dtype=np.uint32)
+        self.regs = np.zeros(16, dtype=np.uint32)
 
     def __getitem__(self, register: Register) -> np.uint32:
         return self.regs[register.value]

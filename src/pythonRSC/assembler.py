@@ -1,7 +1,7 @@
 from typing import List, Dict
 import struct
 from .classes import Instruction
-from .classes import asm_env, Syscall
+from .classes import asm_env, Syscall,Register
 
 class Assembler():
     def __init__(self, fn):
@@ -49,6 +49,12 @@ class Assembler():
             return index
         else:
             raise KeyError(f"Token '{token}' not found in asm_env")
+        
+    def token2register(self, token):
+        if token in Register.__members__:
+            return Register[token].value
+        else:
+            raise KeyError(f"Token '{token}' not found in registers list")
 
     """ 
         Parses the given tokens from each line and generates a scaffolding of instructions stored in self.opcodes 
@@ -69,6 +75,15 @@ class Assembler():
                 except IndexError:
                     print("Missing function for CALL ", self.ln)
                     exit()
+            elif t1 in ["MOV"]:
+                try:
+                    if len(tokens[1].split(",", 1)) > 1: # make sure we have a comma
+                        tokens = [item for elem in tokens for item in elem.split(',') if item]
+                        self.opcodes.extend([self.converter(t1), self.token2register(tokens[1]), tokens[2]])
+                    else:
+                        raise IndexError("Missing ,")
+                except IndexError:
+                    print("Expected an operand for", t1,"at line", self.ln)
             else:
                 self.opcodes.append(self.converter(t1))
         elif ':' in t1:
@@ -98,7 +113,7 @@ class Assembler():
         with open(fn, "w") as file:
             file.write("v2.0 raw\n")
             for instruction in self.instructions:
-                file.write(hex(instruction)[2:].zfill(8)+"\n")
+                file.write(hex(int(instruction))[2:].zfill(8)+"\n")
 
     """ Binary ninja formatted output """
     " The most amazing refactor happened here, you gotta check the commit history to believe it. "

@@ -1,6 +1,8 @@
 # FORK NOTE : I forked this repository to learn more about assembly and try to implement my own new features
 Feature added : Support CALL instruction , where you can call your own python shared functions from asm
 
+ADDED 6 new registers : x0, x1, x2, x3, x4, x5
+ADDED MOV instruction : MOV register, value (MOV x0, 12)
 (idk how to write clean code pls calastrophe don't kill me)
 
 # pythonRSC ( Relatively Simple Computer in Python )
