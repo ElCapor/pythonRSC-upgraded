@@ -20,7 +20,7 @@ class Instruction(Enum):
     NOT = 15
     CALL = 16
     MOV = 17
-    MOVA = 18 # mov data into address
+    MOVA = 18 # mov data into address, internal should only be seen by the cpu
     CMP = 19
 
 

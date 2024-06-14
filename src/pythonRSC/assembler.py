@@ -62,6 +62,10 @@ class Assembler():
     def isvalue(self, symbol):
         return (symbol[0] == "[" and symbol[-1] == "]")
     
+    """ is this token really a symbol ?"""
+    def issymbol(self, symbol):
+        return symbol in self.symbol_table
+    
     """remove the [] around the value to search in symbol table"""
     def nakevalue(self, token):
         if self.isvalue(token):
@@ -98,14 +102,19 @@ class Assembler():
                 try:
                     if len(tokens[1].split(",", 1)) > 1: # make sure we have a comma
                         tokens = [item for elem in tokens for item in elem.split(',') if item]
-                        self.opcodes.append(self.converter(t1))
                         if self.isregister(tokens[1]):
+                            self.opcodes.append(self.converter(t1))
                             self.opcodes.append(self.token2register(tokens[1]))
+                        elif self.issymbol(tokens[1]):
+                            self.opcodes.append(Instruction.MOVA.value) # specific instruction to move values inside a data
+                            self.opcodes.append(self.symbol_table[tokens[1]]) # append the address of the symbol instead to mova
                         else:
-                            print("ERROR NOT A REGISTER")
+                            print("ERROR NOT A REGISTER NOR AN ADDRESS")
                             raise NotImplementedError()
                         if self.isvalue(tokens[2]):
                             self.opcodes.append(self.opcodes[self.symbol_table[self.nakevalue(tokens[2])]])
+                        elif tokens[2].isdigit(): # handle the case where you just want to move a value
+                            self.opcodes.append(int(tokens[2]))
                         else:
                             self.opcodes.append(self.symbol_table[tokens[2]])
                     else:

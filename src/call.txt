@@ -9,6 +9,7 @@ start:
     INC
     STAC first_var
     MOV x0, second_var
+    MOV second_var, 12
     CALL HelloWorld
     HALT
 second:
