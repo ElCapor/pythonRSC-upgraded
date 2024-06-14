@@ -19,9 +19,16 @@ class Instruction(Enum):
     ASHR = 14
     NOT = 15
     CALL = 16
-    MOV = 17
-    MOVA = 18 # mov data into address, internal should only be seen by the cpu
-    CMP = 19
+    MOVXA = 17 # mov address into register
+    MOVXV = 18 # mov value into register
+    MOVXX = 19 # move register into register
+    MOVXI = 20 # move int into register aka runtime data
+    MOVAX = 21 # mov register into address
+    MOVAI = 22 # move int into address
+    MOVAV = 23 # move value into address
+    MOVAA = 24 # move address into address
+    MOV = 25 # just mov
+    CMP = 99
 
 
 class Register(Enum):

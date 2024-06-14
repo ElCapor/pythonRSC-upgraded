@@ -64,6 +64,8 @@ class Assembler():
     
     """ is this token really a symbol ?"""
     def issymbol(self, symbol):
+        if self.isvalue(symbol):
+            symbol = self.nakevalue(symbol) # nake the value to allow checking for string like this [symbol]
         return symbol in self.symbol_table
     
     """remove the [] around the value to search in symbol table"""
@@ -100,6 +102,41 @@ class Assembler():
                     exit()
             elif t1 in ["MOV"]:
                 try:
+                    if len(tokens[1].split(",", 1)) > 1:
+                        tokens = [item for elem in tokens for item in elem.split(',') if item]
+                        print(tokens)
+                        if self.isregister(tokens[1]): #MOVX*
+                            if self.isregister(tokens[2]): #MOVXX
+                                self.opcodes.extend([Instruction.MOVXX.value, self.token2register(tokens[1]), self.token2register(tokens[2])])
+                            elif self.issymbol(tokens[2]): #MOVXV or MOVXA
+                                if self.isvalue(tokens[2]):
+                                    self.opcodes.extend([Instruction.MOVXV.value, self.token2register(tokens[1]), self.symbol_table[self.nakevalue(tokens[2])]]) #MOVXV
+                                else:
+                                    self.opcodes.extend([Instruction.MOVXA.value], self.token2register(tokens[1]), self.symbol_table[tokens[2]])
+                            elif tokens[2].isdigit(): #MOVXI
+                                self.opcodes.extend([Instruction.MOVXI.value, self.token2register(tokens[1]), int(tokens[2])])
+                            else:
+                                raise IndexError("LMAO idk what to do rn")
+                        elif self.issymbol(tokens[1]): #MOVA*
+                            if self.issymbol(tokens[2]): #MOVAA or MOVAV
+                                if self.isvalue(tokens[2]): #MOVAV
+                                    self.opcodes.extend([Instruction.MOVAV.value, self.symbol_table[tokens[1]], self.symbol_table[tokens[2]]])
+                                else: #MOVAA
+                                    self.opcodes.extend([Instruction.MOVAA.value, self.symbol_table[tokens[1]], self.symbol_table[tokens[2]]])
+                            elif self.isregister(tokens[2]): #MOVAX
+                                self.opcodes.extend([Instruction.MOVAX.value, self.symbol_table[tokens[1]], self.token2register(tokens[2])])
+                            elif tokens[2].isdigit(): #MOVAI
+                                self.opcodes.extend([Instruction.MOVAI.value, self.symbol_table[tokens[1]], int(tokens[2])])
+                            else:
+                                print("2nd token is off")
+                        else:
+                            print("incorrect operands")
+                    else:
+                        raise print("Missing nigga")
+                except IndexError:
+                    print("kys")
+                """
+                try:
                     if len(tokens[1].split(",", 1)) > 1: # make sure we have a comma
                         tokens = [item for elem in tokens for item in elem.split(',') if item]
                         if self.isregister(tokens[1]):
@@ -121,6 +158,7 @@ class Assembler():
                         raise IndexError("Missing ,")
                 except IndexError:
                     print("Expected an operand for", t1,"at line", self.ln)
+                    """
             else:
                 self.opcodes.append(self.converter(t1))
         elif ':' in t1:

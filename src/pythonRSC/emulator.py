@@ -70,7 +70,7 @@ class Emulator:
         self.regs[Register.DR] = self.memory[self.regs[Register.AR]]
         inst = self.regs[Register.DR]
         #print(self.memory[self.regs[Register.AR] + 1], self.memory[self.regs[Register.AR] + 2])
-        if inst == Instruction.MOV.value or inst == Instruction.CMP.value:
+        if (inst >= Instruction.MOVXA.value and inst <= Instruction.MOVAA.value): # check if it's a mov instruction
             self.inc_pc(3) # increase by 3 because op size is 3 (1 byte for MOV, 1 for the register and 1 for the value to move)
         else:
             self.inc_pc()
@@ -117,11 +117,100 @@ class Emulator:
                 self._not()
             case Instruction.CALL:
                 self._call()
-            case Instruction.MOV:
-                self._mov()
+           #""" MOV INSTRUCTIONS LMAO """
+            case Instruction.MOVXX:
+                self._movxx()
+            case Instruction.MOVXV:
+                self._movxv()
+            case Instruction.MOVXA:
+                self._movxa()
+            case Instruction.MOVXI:
+                self._movxi()
+            case Instruction.MOVAA:
+                self._movaa()
+            case Instruction.MOVAX:
+                self._movax()
+            case Instruction.MOVAV:
+                self._movav()
+            case Instruction.MOVAI:
+                self._movai()
                 
+    """ Returns the operand that is at a specific index from pc register"""
+    def get_operand_at_index(self, idx :int) ->int:
+        return int(self.memory[self.regs[Register.AR] - idx])
+    
+    def _movxx(self):
+        print("MOVXX")
+        r1 :Register = Register(self.get_operand_at_index(2))
+        r2 :Register = Register(self.get_operand_at_index(1))
+        print(f"MOV reg {r2.name} into {r1.name}")
+        self.regs[r1] = self.regs[r2]
+        
+    def _movxa(self):
+        print("MOVXA")
+        r1 :Register = Register(self.get_operand_at_index(2))
+        address :int = self.get_operand_at_index(1)
+        print(f"Set register {r1.name} to {address}")
+    
+    def _movxv(self):
+        print("MOVXV")    
+        r1 :Register = Register(self.get_operand_at_index(2))
+        address :int = self.get_operand_at_index(1)
+        value :int = self.memory[address]
+        self.regs[r1] = value
+        print(f"Set register {r1.value} to value {value}")
+        
+    def _movxi(self):
+        print("MOVXI")
+        r1 :Register = Register(self.get_operand_at_index(2))
+        value :int = self.get_operand_at_index(1)
+        self.regs[r1] = value
+        print(f"Set register {r1.name} to {value}")
+        
+    def _movaa(self):
+        print("MOVE AA")
+        a1 :int = self.get_operand_at_index(2)
+        a2 :int = self.get_operand_at_index(1)
+        self.memory[a1] = a2
+        print(f"Set addy {a1} to {a2}")
+    
+    def _movax(self):
+        print("MOVAX")
+        a1 :int = self.get_operand_at_index(2)
+        r2 :Register = Register(self.get_operand_at_index(1))
+        self.memory[a1] = self.regs[r2]
+        print(f"Set {a1} to value of {r2.name}")
+        
+    def _movav(self):
+        print("MOVAV")
+        a1 :int = self.get_operand_at_index(2)
+        a2 :int = self.get_operand_at_index(1)
+        value = self.memory[a2]
+        self.memory[a1] = value
+        print(f"Set {a1} to value of {a2} which is {value}")
+        
+    def _movai(self):
+        print("MOVAI")
+        a1 :int = self.get_operand_at_index(2)
+        val :int = self.get_operand_at_index(1)
+        self.memory[a1] = val
+        print(f"set {a1} to {val}")
+        
+    """ mov a value/adddress to a address"""
+    def _mova(self):
+        print("MOVA")
+        addr = int(self.memory[self.regs[Register.AR] - 2])
+        value = int(self.memory[self.regs[Register.AR] - 1])
+        print(addr)
+        print(value)
+        print(self.memory[addr])
+        self.memory[addr] = value
+        print(self.memory[addr])
+        
+    """ mov a value/address to a register"""
     def _mov(self):
         print("MOV CALLED")
+        print(self.regs[Register.AR] - 1)
         print(self.memory[self.regs[Register.AR] - 1], self.memory[self.regs[Register.AR] - 2])
         reg = Register(self.memory[self.regs[Register.AR] - 2])  # Get register from memory
         value = self.memory[self.regs[Register.AR] - 1]           # Get value from memory
@@ -243,7 +332,7 @@ class Registers:
         if register in [Register.S, Register.Z]:
             self.regs[register.value] = value % 2 ** 1
         else:
-            self.regs[register.value] = value % 2 ** 32
+            self.regs[register.value] = value % (2 ** 32)
 
 
 """ A rather expensive way of tracing each modification to memory and registers. """

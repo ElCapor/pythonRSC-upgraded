@@ -8,8 +8,9 @@ start:
     INC
     INC
     STAC first_var
-    MOV x0, second_var
+    MOV x0, [second_var]
     MOV second_var, 12
+    MOV x1, [second_var]
     CALL HelloWorld
     HALT
 second:
