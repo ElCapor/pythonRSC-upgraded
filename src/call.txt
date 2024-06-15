@@ -12,7 +12,7 @@ start:
     MOV second_var, 12
     MOV x1, [second_var]
     CMP x0,x1
-    JE second
+    JNE second
     MOV x3, Z
     CALL HelloWorld
     HALT

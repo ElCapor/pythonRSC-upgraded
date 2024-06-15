@@ -57,8 +57,13 @@ class Flag(Enum):
     PF = 2 # parity flag
      
 
-def hello_asm():
+def hello_asm(emulator):
     print("Hello world")
+    result = int(input("Stop the loop ? "))
+    if result == 1:
+        emulator.regs[Register.x0] = 1
+    else:
+        emulator.regs[Register.x0] = 0
     
 asm_env = {
     "HelloWorld": hello_asm

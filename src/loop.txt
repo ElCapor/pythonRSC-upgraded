@@ -1,0 +1,15 @@
+JMP start
+
+start:
+    MOV x1, 0
+    JMP loop
+
+loop:
+    CALL HelloWorld
+    CMP x0,x1 ; check if should exit the loop
+    JE loop
+    JMP end
+
+end:
+    MOV x1, 300
+    HALT

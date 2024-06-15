@@ -166,12 +166,12 @@ class Emulator:
     def _cmpxx(self):
         r1 :Register = Register(self.get_operand_at_index(2))
         r2 :Register = Register(self.get_operand_at_index(1))
-        print(f"CMP {r1.name} , {r2.name}")
         result = self.regs[r1] - self.regs[r2]
+        print(f"CMP {r1.name} , {r2.name}, result {result}")
         if  result == 0:
             self.flags[Flag.ZF] = 1
         else:
-            self.regs[Flag.ZF] = 0
+            self.flags[Flag.ZF] = 0
     
     def _movxx(self):
         print("MOVXX")
@@ -257,8 +257,9 @@ class Emulator:
         syscall = self.memory[self.regs[Register.AR]]
         key = list(asm_env.keys())[syscall]
         val = asm_env[key]
-        val()
+        val(self)
         print("syscall ", key, syscall)
+        self.inc_pc() # call needs to increase pc by 1 because the syscall is stored in memory too
         
         
     def _not(self):
