@@ -56,7 +56,7 @@ class Flag(Enum):
     OF = 1 # overflow flag
     PF = 2 # parity flag
      
-
+import pyray as pr
 def hello_asm(emulator):
     print("Hello world")
     result = int(input("Stop the loop ? "))
@@ -65,12 +65,57 @@ def hello_asm(emulator):
     else:
         emulator.regs[Register.x0] = 0
     
+
+def init_window(emulator):
+    print("Creating a new window")
+    width = emulator.regs[Register.x0]
+    height = emulator.regs[Register.x1]
+    pr.init_window(width, height, "Hello asm")
+
+# should window close
+def window_close(emulator):
+    emulator.regs[Register.x0] = pr.window_should_close()
+    
+def begin_drawing(emulator):
+    pr.begin_drawing()
+
+def clear_bckground(emulator):
+    color = emulator.regs[Register.x0]
+    pr.clear_background([color, color, color, color])
+    
+def draw_reactangle(emulator):
+    posx = emulator.regs[Register.x0]
+    posy = emulator.regs[Register.x1]
+    width = emulator.regs[Register.x2]
+    height = emulator.regs[Register.x3]
+    color = emulator.regs[Register.x4]
+    pr.draw_rectangle(posx, posy, width, height, color)
+    
+def end_drawing(emulator):
+    pr.end_drawing()
+
+def close_window(emulator):
+    pr.close_window()
+
 asm_env = {
-    "HelloWorld": hello_asm
+    "HelloWorld": hello_asm,
+    "InitWindow" : init_window,
+    "CloseWindow" : close_window,
+    "WindowShouldClose" : window_close,
+    "BeginDrawing" : begin_drawing,
+    "EndDrawing" : end_drawing,
+    "ClearBackground" : clear_bckground,
+    "DrawRectangle" : draw_reactangle
 }
 
 class Syscall(Enum):
     HELLO = 0
+    INITWINDOW = 1
+    CLOSEWINDOW = 2
+    WINDOWSHOULDCLOSE = 3
+    BEGINDRAWING = 4
+    ENDDRAWING = 5
+    CLEARBACKGROUND = 6
 
 def toReg(source: str) -> Register | None:
     for reg in Register:

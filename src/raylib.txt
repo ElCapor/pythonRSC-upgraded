@@ -1,0 +1,22 @@
+JMP start
+
+start:
+    MOV x0, 800
+    MOV x1, 600
+    CALL InitWindow ; create the window
+    JMP loop
+
+loop:
+    MOV x1, 1
+    CALL WindowShouldClose ; returns directly in x0
+    CMP x0, x1
+    JE end ; windowshouldclose = 1
+    CALL BeginDrawing
+    MOV x0, 255
+    CALL ClearBackground
+    CALL EndDrawing
+    JMP loop
+end:
+    CALL CloseWindow
+    HALT
+    

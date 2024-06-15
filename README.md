@@ -12,6 +12,14 @@ you can move a value or an address to a register :
 MOV x0, address ; will load the address in memory to x0
 MOV x0, [address] ; will load the value inside the address
 
+ADDED 3 Flags : ZF OF PF
+ADDED CMP instruction (only compare 2 registers for now)
+ADDED JE/JNE (will check Flags.ZF only for now)
+
+Custom environnement functions can act on the registers
+
+TODO : Handle characters
+
 TODO : maybe add lea, and support mov to address
 (idk how to write clean code pls calastrophe don't kill me)
 
