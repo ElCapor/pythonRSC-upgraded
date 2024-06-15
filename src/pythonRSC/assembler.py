@@ -88,7 +88,7 @@ class Assembler():
     def parse_tokens(self, tokens: List[str]):
         t1 : str = tokens[0]
         if self.checker(t1):
-            if t1 in ["LDAC", "STAC", "JMP", "JMPZ"]:
+            if t1 in ["LDAC", "STAC", "JMP", "JMPZ", "JE", "JNE"]:
                 try:
                     self.opcodes.extend([self.converter(t1), tokens[1]]) # Named addresses
                 except IndexError:

@@ -2,7 +2,7 @@ from typing import Dict, Optional, List
 import numpy as np
 import pyCFG
 from .assembler import Assembler
-from .classes import Instruction, Register, toReg, asm_env
+from .classes import Instruction, Register, toReg, asm_env, Flag
 
 
 class Emulator:
@@ -10,6 +10,7 @@ class Emulator:
     def __init__(self, assembler_obj: Assembler, debug_mode: bool, cfg: str):
         self.memory = Memory(assembler_obj.memory_layout)
         self.regs = Registers()
+        self.flags = Flags()
         self.assembler = assembler_obj
         self.debugger: Optional[Debugger] = Debugger(self) if debug_mode else None
         self.engine = TimelessEngine(self) if debug_mode else None
@@ -136,22 +137,41 @@ class Emulator:
                 self._movai()
             # CMP Instructions
             case Instruction.CMPXX:
-                self._cmpxx()                
+                self._cmpxx()       
+                
+            # JMPS
+            case Instruction.JE:
+                self._je()
+            case Instruction.JNE:
+                self._jne()
                 
     """ Returns the operand that is at a specific index from pc register"""
     def get_operand_at_index(self, idx :int) ->int:
         return int(self.memory[self.regs[Register.AR] - idx])
     
+    def _je(self):
+        if self.flags[Flag.ZF] == 1:
+            self.regs[Register.DR] = self.memory[self.regs[Register.AR]]
+            self.regs[Register.PC] = self.regs[Register.DR]
+        else:
+            self.inc_pc()
+
+    def _jne(self):
+        if self.flags[Flag.ZF] == 0:
+            self.regs[Register.DR] = self.memory[self.regs[Register.AR]]
+            self.regs[Register.PC] = self.regs[Register.DR]
+        else:
+            self.inc_pc()
+        
     def _cmpxx(self):
         r1 :Register = Register(self.get_operand_at_index(2))
         r2 :Register = Register(self.get_operand_at_index(1))
         print(f"CMP {r1.name} , {r2.name}")
         result = self.regs[r1] - self.regs[r2]
-        print(result)
         if  result == 0:
-            self.regs[Register.Z] = 1
+            self.flags[Flag.ZF] = 1
         else:
-            self.regs[Register.Z] = 0
+            self.regs[Flag.ZF] = 0
     
     def _movxx(self):
         print("MOVXX")
@@ -332,9 +352,18 @@ class Memory:
     def __setitem__(self, key, value):
         self.memory[key] = value
 
+"""Wrapper around an np.array of int32 for flags"""
+class Flags:
+    def __init__(self):
+        self.flags = np.zeros(3, dtype=np.uint32)
+        
+    def __getitem__(self, flag :Flag) -> np.uint32:
+        return self.flags[flag.value]
+    
+    def __setitem__(self, flag :Flag, value :int):
+        self.flags[flag.value] = value % (2**1)
 
-
-""" A wrapper around an np.array of int32, allows for quick access and modification of contents """
+""" A wrapper around an np.array of uint32, allows for quick access and modification of contents """
 class Registers:
     def __init__(self):
         self.regs = np.zeros(16, dtype=np.uint32)

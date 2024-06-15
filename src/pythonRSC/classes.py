@@ -29,7 +29,9 @@ class Instruction(Enum):
     MOVAA = 24 # move address into address
     MOV = 25 # just mov
     CMPXX = 26 # compare 2 registers
-    CMP = 99
+    CMP = 30
+    JE = 31 # jump if equal
+    JNE = 32 # jump if not equal
 
 
 class Register(Enum):
@@ -48,6 +50,12 @@ class Register(Enum):
     x3 = 12
     x4 = 13
     x5 = 15
+    
+class Flag(Enum):
+    ZF = 0 # zero flag for cmp
+    OF = 1 # overflow flag
+    PF = 2 # parity flag
+     
 
 def hello_asm():
     print("Hello world")
