@@ -18,7 +18,7 @@ ADDED JE/JNE (will check Flags.ZF only for now)
 
 Custom environnement functions can act on the registers
 
-TODO : Handle characters
+TODO : Handle characters and structs
 
 TODO : maybe add lea, and support mov to address
 (idk how to write clean code pls calastrophe don't kill me)

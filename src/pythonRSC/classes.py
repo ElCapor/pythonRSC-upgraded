@@ -89,7 +89,7 @@ def draw_reactangle(emulator):
     width = emulator.regs[Register.x2]
     height = emulator.regs[Register.x3]
     color = emulator.regs[Register.x4]
-    pr.draw_rectangle(posx, posy, width, height, color)
+    pr.draw_rectangle(posx, posy, width, height, [255,color, 0, 255])
     
 def end_drawing(emulator):
     pr.end_drawing()
@@ -116,6 +116,7 @@ class Syscall(Enum):
     BEGINDRAWING = 4
     ENDDRAWING = 5
     CLEARBACKGROUND = 6
+    DRAWRECT = 7
 
 def toReg(source: str) -> Register | None:
     for reg in Register:
